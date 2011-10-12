@@ -37,8 +37,8 @@ class Call(object):
         if not isinstance(value, dict):
             raise TypeError("Call.headers must be a dict of strings to objects")
 
-        for key in value.keys():
-            if not isinstance(key, basestring):
+        for key in list(value.keys()):
+            if not isinstance(key, str):
                 raise TypeError("Call.headers must be a dict of strings to objects")
 
         self._headers = value
@@ -69,8 +69,8 @@ class Reply(object):
         if not isinstance(value, dict):
             raise TypeError("Call.headers must be a dict of strings to objects")
 
-        for key in value.keys():
-            if not isinstance(key, basestring):
+        for key in list(value.keys()):
+            if not isinstance(key, str):
                 raise TypeError("Call.headers must be a dict of strings to objects")
 
         self._headers = value

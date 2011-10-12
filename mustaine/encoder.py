@@ -119,7 +119,7 @@ def encode_keyval(pair):
 @encoder_for(DictType)
 @returns('map')
 def encode_map(obj):
-    encoded = ''.join(map(encode_keyval, obj.items()))
+    encoded = ''.join(map(encode_keyval, list(obj.items())))
     return pack('>c', 'M') + encoded + 'z'
 
 @encoder_for(Object)
@@ -128,7 +128,7 @@ def encode_mobject(obj):
     members  = obj.__getstate__()
     del members['__meta_type'] # this is here for pickling. we don't want or need it
 
-    encoded += ''.join(map(encode_keyval, members.items()))
+    encoded += ''.join(map(encode_keyval, list(members.items())))
     return (obj._meta_type.rpartition('.')[2], pack('>c', 'M') + encoded + 'z')
 
 @encoder_for(Remote)
@@ -160,7 +160,7 @@ def encode_call(call):
     headers   = ''
     arguments = ''
 
-    for header,value in call.headers.items():
+    for header,value in list(call.headers.items()):
         if not isinstance(header, StringType):
             raise TypeError("Call header keys must be strings")
 

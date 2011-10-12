@@ -1,10 +1,7 @@
 import datetime
 from struct import unpack
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import StringIO
 
 from mustaine.protocol import *
 
@@ -16,7 +13,7 @@ class ParseError(Exception):
 
 class Parser(object):
     def parse_string(self, string):
-        if isinstance(string, unicode):
+        if isinstance(string, str):
             stream = StringIO(string.encode('utf-8'))
         else:
             stream = StringIO(string)
@@ -125,7 +122,7 @@ class Parser(object):
         elif code == 'I':
             return int(unpack('>l', self._read(4))[0])
         elif code == 'L':
-            return long(unpack('>q', self._read(8))[0])
+            return int(unpack('>q', self._read(8))[0])
         elif code == 'D':
             return float(unpack('>d', self._read(8))[0])
         elif code == 'd':

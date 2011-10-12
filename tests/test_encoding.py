@@ -129,58 +129,58 @@ def test_encode_int_m17():
     assert test.argInt_m17(-17) is True
 
 def test_encode_long_0():
-    assert test.argLong_0(0L) is True
+    assert test.argLong_0(0) is True
 
 def test_encode_long_0x10():
-    assert test.argLong_0x10(0x10L) is True
+    assert test.argLong_0x10(0x10) is True
 
 def test_encode_long_0x3ffff():
-    assert test.argLong_0x3ffff(0x3ffffL) is True
+    assert test.argLong_0x3ffff(0x3ffff) is True
 
 def test_encode_long_0x40000():
-    assert test.argLong_0x40000(0x40000L) is True
+    assert test.argLong_0x40000(0x40000) is True
 
 def test_encode_long_0x7ff():
-    assert test.argLong_0x7ff(0x7ffL) is True
+    assert test.argLong_0x7ff(0x7ff) is True
 
 def test_encode_long_0x7fffffff():
-    assert test.argLong_0x7fffffff(0x7fffffffL) is True
+    assert test.argLong_0x7fffffff(0x7fffffff) is True
 
 def test_encode_long_0x800():
-    assert test.argLong_0x800(0x800L) is True
+    assert test.argLong_0x800(0x800) is True
 
 def test_encode_long_0x80000000():
-    assert test.argLong_0x80000000(0x80000000L) is True
+    assert test.argLong_0x80000000(0x80000000) is True
 
 def test_encode_long_1():
-    assert test.argLong_1(1L) is True
+    assert test.argLong_1(1) is True
 
 def test_encode_long_15():
-    assert test.argLong_15(15L) is True
+    assert test.argLong_15(15) is True
 
 def test_encode_long_m0x40000():
-    assert test.argLong_m0x40000(-0x40000L) is True
+    assert test.argLong_m0x40000(-0x40000) is True
 
 def test_encode_long_m0x40001():
-    assert test.argLong_m0x40001(-0x40001L) is True
+    assert test.argLong_m0x40001(-0x40001) is True
 
 def test_encode_long_m0x800():
-    assert test.argLong_m0x800(-0x800L) is True
+    assert test.argLong_m0x800(-0x800) is True
 
 def test_encode_long_m0x80000000():
-    assert test.argLong_m0x80000000(-0x80000000L) is True
+    assert test.argLong_m0x80000000(-0x80000000) is True
 
 def test_encode_long_m0x80000001():
-    assert test.argLong_m0x80000001(-0x80000001L) is True
+    assert test.argLong_m0x80000001(-0x80000001) is True
 
 def test_encode_long_m0x801():
-    assert test.argLong_m0x801(-0x801L) is True
+    assert test.argLong_m0x801(-0x801) is True
 
 def test_encode_long_m8():
-    assert test.argLong_m8(-8L) is True
+    assert test.argLong_m8(-8) is True
 
 def test_encode_long_m9():
-    assert test.argLong_m9(-9L) is True
+    assert test.argLong_m9(-9) is True
 
 def test_encode_null():
     assert test.argNull(None) is True

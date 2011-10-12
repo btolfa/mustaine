@@ -1,5 +1,5 @@
-from httplib import HTTPConnection, HTTPSConnection
-from urlparse import urlparse
+from http.client import HTTPConnection, HTTPSConnection
+from urllib.parse import urlparse
 from warnings import warn
 import base64
 import sys
