@@ -33,12 +33,12 @@ def encode_object(obj):
     return encoder(obj)[1]
 
 
-@encoder_for(NoneType)
+@encoder_for(type(None))
 @returns('null')
 def encode_null(_):
     return 'N'
 
-@encoder_for(BooleanType)
+@encoder_for(bool)
 @returns('bool')
 def encode_boolean(value):
     if value:
@@ -46,17 +46,17 @@ def encode_boolean(value):
     else:
         return 'F'
 
-@encoder_for(IntType)
+@encoder_for(int)
 @returns('int')
 def encode_int(value):
     return pack('>cl', 'I', value)
 
-@encoder_for(LongType)
+@encoder_for(int)
 @returns('long')
 def encode_long(value):
     return pack('>cq', 'L', value)
 
-@encoder_for(FloatType)
+@encoder_for(float)
 @returns('double')
 def encode_double(value):
     return pack('>cd', 'D', value)
@@ -66,7 +66,7 @@ def encode_double(value):
 def encode_date(value):
     return pack('>cq', 'd', int(time.mktime(value.timetuple())) * 1000)
 
-@encoder_for(StringType)
+@encoder_for(bytes)
 @returns('string')
 def encode_string(value):
     encoded = ''
@@ -87,7 +87,7 @@ def encode_string(value):
     encoded += value
     return encoded
 
-@encoder_for(UnicodeType)
+@encoder_for(str)
 @returns('string')
 def encode_unicode(value):
     encoded = ''
@@ -101,13 +101,13 @@ def encode_unicode(value):
     encoded += value.encode('utf-8')
     return encoded
 
-@encoder_for(ListType)
+@encoder_for(list)
 @returns('list')
 def encode_list(obj):
     encoded = ''.join(map(encode_object, obj))
     return pack('>2cl', 'V', 'l', -1) + encoded + 'z'
 
-@encoder_for(TupleType)
+@encoder_for(tuple)
 @returns('list')
 def encode_tuple(obj):
     encoded = ''.join(map(encode_object, obj))
@@ -116,7 +116,7 @@ def encode_tuple(obj):
 def encode_keyval(pair):
     return ''.join((encode_object(pair[0]), encode_object(pair[1])))
 
-@encoder_for(DictType)
+@encoder_for(dict)
 @returns('map')
 def encode_map(obj):
     encoded = ''.join(map(encode_keyval, list(obj.items())))
