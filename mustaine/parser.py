@@ -1,7 +1,7 @@
 import datetime
 from struct import unpack
 
-from io import StringIO
+from io import BytesIO
 
 from mustaine.protocol import *
 
@@ -12,11 +12,11 @@ class ParseError(Exception):
     pass
 
 class Parser(object):
-    def parse_string(self, string):
-        if isinstance(string, str):
-            stream = StringIO(string.encode('utf-8'))
+    def parse_string(self, bypesarray):
+        if isinstance(bypesarray, str):
+            stream = BytesIO(bypesarray.encode('utf-8'))
         else:
-            stream = StringIO(string)
+            stream = BytesIO(bypesarray)
 
         return self.parse_stream(stream)
 
@@ -32,23 +32,23 @@ class Parser(object):
         while True:
             code = self._read(1)
 
-            if   code == 'c':
+            if code == b'c':
                 if self._result:
                     raise ParseError('Encountered duplicate type header')
 
                 version = self._read(2)
-                if version != '\x01\x00':
+                if version != b'\x01\x00':
                     raise ParseError("Encountered unrecognized call version %r" % (version,))
 
                 self._result = Call()
                 continue
 
-            elif code == 'r':
+            elif code == b'r':
                 if self._result:
                     raise ParseError('Encountered duplicate type header')
 
                 version = self._read(2)
-                if version != '\x01\x00':
+                if version != b'\x01\x00':
                     raise ParseError("Encountered unrecognized reply version %r" % (version,))
 
                 self._result = Reply()
@@ -58,12 +58,12 @@ class Parser(object):
                 if not self._result:
                     raise ParseError("Invalid Hessian message marker: %r" % (code,))
 
-                if   code == 'H':
+                if   code == b'H':
                     key, value = self._read_keyval()
                     self._result.headers[key] = value
                     continue
 
-                elif code == 'm':
+                elif code == b'm':
                     if not isinstance(self._result, Call):
                         raise ParseError('Encountered illegal method name within reply')
 
@@ -73,7 +73,7 @@ class Parser(object):
                     self._result.method = self._read(unpack('>H', self._read(2))[0])
                     continue
 
-                elif code == 'f':
+                elif code == b'f':
                     if not isinstance(self._result, Reply):
                         raise ParseError('Encountered illegal fault within call')
 
@@ -83,7 +83,7 @@ class Parser(object):
                     self._result.value = self._read_fault()
                     continue
 
-                elif code == 'z':
+                elif code == b'z':
                     break
 
                 else:
@@ -113,45 +113,45 @@ class Parser(object):
         return r
 
     def _read_object(self, code):
-        if   code == 'N':
+        if   code == b'N':
             return None
-        elif code == 'T':
+        elif code == b'T':
             return True
-        elif code == 'F':
+        elif code == b'F':
             return False
-        elif code == 'I':
+        elif code == b'I':
             return int(unpack('>l', self._read(4))[0])
-        elif code == 'L':
+        elif code == b'L':
             return int(unpack('>q', self._read(8))[0])
-        elif code == 'D':
+        elif code == b'D':
             return float(unpack('>d', self._read(8))[0])
-        elif code == 'd':
+        elif code == b'd':
             return self._read_date()
-        elif code == 's' or code == 'x':
+        elif code == b's' or code == b'x':
             fragment = self._read_string()
             next     = self._read(1)
             if next.lower() == code:
                 return fragment + self._read_object(next)
             else:
                 raise ParseError("Expected terminal string segment, got %r" % (next,))
-        elif code == 'S' or code == 'X':
+        elif code == b'S' or code == b'X':
             return self._read_string()
-        elif code == 'b':
+        elif code == b'b':
             fragment = self._read_binary()
             next     = self._read(1)
             if next.lower() == code:
                 return fragment + self._read_object(next)
             else:
                 raise ParseError("Expected terminal binary segment, got %r" % (next,))
-        elif code == 'B':
+        elif code == b'B':
             return self._read_binary()
-        elif code == 'r':
+        elif code == b'r':
             return self._read_remote()
-        elif code == 'R':
+        elif code == b'R':
             return self._refs[unpack(">L", self._read(4))[0]]
-        elif code == 'V':
+        elif code == b'V':
             return self._read_list()
-        elif code == 'M':
+        elif code == b'M':
             return self._read_map()
         else:
             raise ParseError("Unknown type marker %r" % (code,))
@@ -176,7 +176,7 @@ class Parser(object):
                 bytes.append(byte + self._read(3))
             len -= 1
 
-        return ''.join(bytes).decode('utf-8')
+        return b''.join(bytes).decode('utf-8')
 
     def _read_binary(self):
         len = unpack('>H', self._read(2))[0]
@@ -186,13 +186,13 @@ class Parser(object):
         r    = Remote()
         code = self._read(1)
 
-        if code == 't':
+        if code == b't':
             r.type = self._read(unpack('>H', self._read(2))[0])
             code   = self._read(1)
         else:
             r.type = None
 
-        if code != 's' and code != 'S':
+        if code != b's' and code != b'S':
             raise ParseError("Expected string object while parsing Remote object URL")
 
         r.url = self._read_object(code)
@@ -201,12 +201,12 @@ class Parser(object):
     def _read_list(self):
         code = self._read(1)
 
-        if code == 't':
+        if code == b't':
             # read and discard list type
             self._read(unpack('>H', self._read(2))[0])
             code = self._read(1)
 
-        if code == 'l':
+        if code == b'l':
             # read and discard list length
             self._read(4)
             code = self._read(1)
@@ -214,7 +214,7 @@ class Parser(object):
         result = []
         self._refs.append(result)
 
-        while code != 'z':
+        while code != b'z':
             result.append(self._read_object(code))
             code = self._read(1)
 
@@ -223,7 +223,7 @@ class Parser(object):
     def _read_map(self):
         code = self._read(1)
 
-        if code == 't':
+        if code == b't':
             type_len = unpack('>H', self._read(2))[0]
             if type_len > 0:
                 # a typed map deserializes to an object
@@ -239,7 +239,7 @@ class Parser(object):
         self._refs.append(result)
 
         fields = {}
-        while code != 'z':
+        while code != b'z':
             key, value  = self._read_keyval(code)
 
             if isinstance(result, Object):
