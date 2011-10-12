@@ -1,7 +1,7 @@
 '''
 Created on 12.10.2011
 
-@author: ranfix
+@author: Tengiz Sharafiev <btolfa@gmail.com>
 '''
 import unittest
 from mustaine.client import HessianProxy
