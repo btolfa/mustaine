@@ -116,7 +116,7 @@ def encode_map(obj):
 
 @encoder_for(Object)
 def encode_mobject(obj):
-    encoded  = pack('>cH', b't', len(obj._meta_type)) + obj._meta_type
+    encoded  = pack('>cH', b't', len(obj._meta_type)) + obj._meta_type.encode('utf8')
     members  = obj.__getstate__()
     del members['__meta_type'] # this is here for pickling. we don't want or need it
 
