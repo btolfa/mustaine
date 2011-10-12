@@ -91,9 +91,9 @@ class HessianProxy(object):
                 self._client.putheader(*header)
 
             request = encode_object(Call(method, args, overload=self._overload))
-            self._client.putheader("Content-Length", str(len(request)))
+            self._client.putheader("Content-Length", str(len(request)).encode('utf8'))
             self._client.endheaders()
-            self._client.send(str(request))
+            self._client.send(str(request).encode('utf8'))
 
             response = self._client.getresponse()
             if response.status != 200:
