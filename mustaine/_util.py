@@ -1,4 +1,5 @@
-from io import StringIO
+#from io import StringIO
+from io import BytesIO
 
 
 class BufferedReader(object):
@@ -6,7 +7,7 @@ class BufferedReader(object):
     def __init__(self, input, buffer_size=65535):
         self.__input       = input
         self.__buffer_size = buffer_size
-        self.__buffer      = StringIO()
+        self.__buffer      = BytesIO()
 
         # initial fill
         chunk = input.read(buffer_size)
